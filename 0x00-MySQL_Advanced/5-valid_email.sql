@@ -1,6 +1,5 @@
 -- Create a trigger for resetting the valid email atribute of
 -- the table users, when the email is updated
-DROP TRIGGER IF EXISTS user_trigger;
 
 DELIMITER $$ ;
 CREATE TRIGGER user_trigger BEFORE UPDATE ON users FOR EACH ROW
