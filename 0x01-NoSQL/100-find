@@ -1,0 +1,2 @@
+// This script uses regular expression to find all the schools that starts with the name 'Holberton'.
+db.school.find({'name': /^Holberton.*$/})
