@@ -6,7 +6,40 @@ information.
 import uuid
 import redis
 from typing import Union, Callable
+from functools import wraps
 
+
+def count_calls(method: Callable) -> Callable:
+    '''
+    This is a decorator that will count the number of times
+    any function it is decorated with is called and it will
+    return the value returned by the original method.
+    '''
+
+    # saving the name of the method as key and number of times
+    # it is called as value
+    funcCallCount = {}
+
+    # the fucntools helps to retain the name of the function
+    @wraps(method)
+    def wrapper(self, *args, **kwargs):
+        '''
+        The function that does the increamenting and calls the
+        original function which then returns the value
+        '''
+        # The qualified name dunder method will help to get the full
+        # details of the method
+        key = method.__qualname__
+        
+        funcCallCount[key] = funcCallCount.get(key, 0) + 1
+
+        # save the counter in the redisDB
+        self._redis.mset(funcCallCount)
+        self._redis.save()
+        result = method(self, *args, **kwargs)
+        return result
+
+    return wrapper
 
 class Cache:
     '''
@@ -22,6 +55,7 @@ class Cache:
         self._redis = redis.Redis()
         self._redis.flushdb()
 
+    @count_calls
     def store(self, data: Union[str, bytes, int, float]) -> str:
         '''
         This method takes a data arguments and returns the key
