@@ -18,7 +18,7 @@ def count_calls(method: Callable) -> Callable:
 
     # saving the name of the method as key and number of times
     # it is called as value
-    funcCallCount = {}
+    # funcCallCount = {}
 
     # the fucntools helps to retain the name of the function
     @wraps(method)
@@ -31,10 +31,10 @@ def count_calls(method: Callable) -> Callable:
         # details of the method
         key = method.__qualname__
         
-        funcCallCount[key] = funcCallCount.get(key, 0) + 1
+        # funcCallCount[key] = funcCallCount.get(key, 0) + 1
 
         # save the counter in the redisDB
-        self._redis.mset(funcCallCount)
+        self._redis.incrby(key)
         self._redis.save()
         result = method(self, *args, **kwargs)
         return result
