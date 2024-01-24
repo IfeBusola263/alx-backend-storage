@@ -5,7 +5,7 @@ information.
 '''
 import uuid
 import redis
-from typing import Union
+from typing import Union, Callable
 
 
 class Cache:
@@ -32,3 +32,32 @@ class Cache:
         self._redis.set(uid, data)
         self._redis.save()
         return uid
+
+    def get(self, key: str, fn: Callable = None) -> Union[
+            str, bytes, int, float, None]:
+        '''
+        This function turns the returned byte return value from redis
+        to its original data type. If the key does not exists, it returns
+        None.
+        '''
+        value = self._redis.get(key)
+        if value is None:
+            return None
+
+        if callable(fn):
+            value = fn(value)
+            return value
+        return value
+
+    def get_str(self, key: str) -> str:
+        '''
+        This function parametizes the get get function with the str callable.
+        '''
+        return self.get(key, str)
+
+    def get_str(self, key: str) -> int:
+        '''
+        This function parametizes the get function with the int callable.
+        '''
+        return self.get(key, int)
+        
