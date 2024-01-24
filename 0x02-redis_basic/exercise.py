@@ -52,8 +52,8 @@ def call_history(method: Callable) -> Callable:
 
         # push the inputs into redis and same for output after
         # executing the function
-        self._redis.rpush(input_key, *args)
-        result = method(self, *arg, **kwargs)
+        self._redis.rpush(input_key, str(args))
+        result = method(self, *args, **kwargs)
         self._redis.rpush(output_key, result)
         self._redis.save()
         return result
