@@ -16,10 +16,6 @@ def count_calls(method: Callable) -> Callable:
     return the value returned by the original method.
     '''
 
-    # saving the name of the method as key and number of times
-    # it is called as value
-    # funcCallCount = {}
-
     # the fucntools helps to retain the name of the function
     @wraps(method)
     def wrapper(self, *args, **kwargs):
@@ -30,16 +26,40 @@ def count_calls(method: Callable) -> Callable:
         # The qualified name dunder method will help to get the full
         # details of the method
         key = method.__qualname__
-        
-        # funcCallCount[key] = funcCallCount.get(key, 0) + 1
 
-        # save the counter in the redisDB
+        # increment and save the counter in the redisDB
         self._redis.incrby(key)
         self._redis.save()
         result = method(self, *args, **kwargs)
         return result
 
     return wrapper
+
+
+def call_history(method: Callable) -> Callable:
+    '''
+    This is a decorator that inserts the inputs of the method in a list
+    and the output in another list
+    '''
+    @wraps(method)
+    def wrapper(self, *args, **kwargs):
+        '''
+        This wrapper function help to push the input and output data
+        into the list in the database.
+        '''
+        input_key = method.__qualname__ + ":inputs"
+        output_key = method.__qualname__ + ":outputs"
+
+        # push the inputs into redis and same for output after
+        # executing the function
+        self._redis.rpush(input_key, *args)
+        result = method(self, *arg, **kwargs)
+        self._redis.rpush(output_key, result)
+        self._redis.save()
+        return result
+
+    return wrapper
+
 
 class Cache:
     '''
@@ -55,6 +75,7 @@ class Cache:
         self._redis = redis.Redis()
         self._redis.flushdb()
 
+    @call_history
     @count_calls
     def store(self, data: Union[str, bytes, int, float]) -> str:
         '''
@@ -94,4 +115,3 @@ class Cache:
         This function parametizes the get function with the int callable.
         '''
         return self.get(key, int)
-        
