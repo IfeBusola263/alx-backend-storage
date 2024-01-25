@@ -88,7 +88,6 @@ class Cache:
         self._redis.save()
         return uid
 
-    @property
     def replay(self) -> None:
         '''
         The function displays the history calls of a particular
@@ -109,12 +108,11 @@ class Cache:
         # The zip function will create a tuple of each item in the same
         # index of the two iterators inputList and outputList
         for args, result in zip(inputList, outputList):
-            print(
-                f'\t{self.store.__qualname__}(*{args.decode("utf-8")}) -> { \
-result.decode("utf-8")}'
-            )
+            print('\t{}(*{}) -> {}'.format(
+                self.store.__qualname__,
+                args.decode("utf-8"), result.decode("utf-8")))
 
-    def get(self, key: str, fn: Callable = None) -> Union[
+    def get(self, key: str, fn: Callable = lambda x: x) -> Union[
             str, bytes, int, float, None]:
         '''
         This function turns the returned byte return value from redis
@@ -137,7 +135,7 @@ result.decode("utf-8")}'
         '''
         return self.get(key, str)
 
-    def get_str(self, key: str) -> int:
+    def get_int(self, key: str) -> int:
         '''
         This function parametizes the get function
         with the int callable.
