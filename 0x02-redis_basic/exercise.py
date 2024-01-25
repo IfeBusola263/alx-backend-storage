@@ -132,12 +132,14 @@ result.decode("utf-8")}'
 
     def get_str(self, key: str) -> str:
         '''
-        This function parametizes the get get function with the str callable.
+        This function parametizes the get get function
+        with the str callable.
         '''
         return self.get(key, str)
 
     def get_str(self, key: str) -> int:
         '''
-        This function parametizes the get function with the int callable.
+        This function parametizes the get function
+        with the int callable.
         '''
         return self.get(key, int)
