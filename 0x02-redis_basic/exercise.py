@@ -60,31 +60,6 @@ def call_history(method: Callable) -> Callable:
 
     return wrapper
 
-def replay(method: Callable) -> None:
-    '''
-    The function displays the history calls of a particular
-    function
-    '''
-
-    # @wraps(method)
-    # def wrap(self, *args, **kwargs):
-
-    # Get the key for the list as saved in the redis database
-    # Use the call_history decorator above to get the understanding
-    input_key = method.__qualname__ + ":inputs"
-    output_key = method.__qualname__ + ":outputs"
-
-    # Get length of the input list from the database
-    totalCall = method._redis.llen(input_key)
-    print(f'{method.__qualname__} was called {totalCall} times:')
-    inputList = method._redis.lrange(input_key, 0, -1)
-    outputList = method._redis.lrange(output_key, 0, -1)
-
-    # The zip function will create a tuple of each item in the same
-    # index of the two iterators inputList and outputList
-    for args, result in zip(inputList, outputList):
-        print(f'\t{method.__qualname__}(*{args.decode("utf-8")}) -> {result.decode("utf-8")}')
-
 
 
 
@@ -115,6 +90,31 @@ class Cache:
         self._redis.save()
         return uid
 
+    @property
+    def replay(self) -> None:
+        '''
+        The function displays the history calls of a particular
+        function
+        '''
+
+        # Get the key for the list as saved in the redis database
+        # Use the call_history decorator above to get the understanding
+        input_key = self.store.__qualname__ + ":inputs"
+        output_key = self.store.__qualname__ + ":outputs"
+
+        # Get length of the input list from the database
+        totalCall = self._redis.llen(input_key)
+        print(f'{self.store.__qualname__} was called {totalCall} times:')
+        inputList = self._redis.lrange(input_key, 0, -1)
+        outputList = self._redis.lrange(output_key, 0, -1)
+
+        # The zip function will create a tuple of each item in the same
+        # index of the two iterators inputList and outputList
+        for args, result in zip(inputList, outputList):
+            print(f'\t{self.store.__qualname__}(*{args.decode("utf-8")}) -> {result.decode("utf-8")}')
+
+
+    
     def get(self, key: str, fn: Callable = None) -> Union[
             str, bytes, int, float, None]:
         '''
