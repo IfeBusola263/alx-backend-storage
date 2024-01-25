@@ -61,8 +61,6 @@ def call_history(method: Callable) -> Callable:
     return wrapper
 
 
-
-
 class Cache:
     '''
     The Cache class store an instance of a redis client
@@ -111,10 +109,11 @@ class Cache:
         # The zip function will create a tuple of each item in the same
         # index of the two iterators inputList and outputList
         for args, result in zip(inputList, outputList):
-            print(f'\t{self.store.__qualname__}(*{args.decode("utf-8")}) -> {result.decode("utf-8")}')
+            print(
+                f'\t{self.store.__qualname__}(*{args.decode("utf-8")}) -> { \
+result.decode("utf-8")}'
+            )
 
-
-    
     def get(self, key: str, fn: Callable = None) -> Union[
             str, bytes, int, float, None]:
         '''
