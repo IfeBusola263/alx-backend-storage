@@ -28,7 +28,7 @@ def count_calls(method: Callable) -> Callable:
         key = method.__qualname__
 
         # increment and save the counter in the redisDB
-        self._redis.incrby(key)
+        self._redis.incr(key)
         self._redis.save()
         result = method(self, *args, **kwargs)
         return result
