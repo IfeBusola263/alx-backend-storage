@@ -25,7 +25,7 @@ def count_calls(method: Callable) -> Callable:
         '''
         # The qualified name dunder method will help to get the full
         # details of the method
-        key = f'count_calls:{method.__qualname__}'
+        key = method.__qualname__
 
         # increment and save the counter in the redisDB
         self._redis.incr(key)
