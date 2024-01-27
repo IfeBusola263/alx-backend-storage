@@ -15,6 +15,10 @@ def count_calls(method: Callable) -> Callable:
     any function it is decorated with is called and it will
     return the value returned by the original method.
     '''
+    # The qualified name dunder method will help to get the full
+    # details of the method
+    key = method.__qualname__
+
 
     # the fucntools helps to retain the name of the function
     @wraps(method)
@@ -23,10 +27,7 @@ def count_calls(method: Callable) -> Callable:
         The function that does the increamenting and calls the
         original function which then returns the value
         '''
-        # The qualified name dunder method will help to get the full
-        # details of the method
-        key = method.__qualname__
-
+        
         # increment and save the counter in the redisDB
         self._redis.incr(key)
         self._redis.save()
