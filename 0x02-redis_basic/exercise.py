@@ -77,7 +77,7 @@ def replay(method: Callable) -> None:
     # The zip function will create a tuple of each item in the same
     # index of the two iterators inputList and outputList
     for args, result in zip(inputList, outputList):
-        print('\t{}(*{}) -> {}'.format(
+        print('{}(*{}) -> {}'.format(
             method.__qualname__,
             args.decode("utf-8"), result.decode("utf-8")))
 
