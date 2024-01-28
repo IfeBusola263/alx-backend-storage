@@ -57,6 +57,7 @@ def call_history(method: Callable) -> Callable:
 
     return wrapper
 
+
 def replay(method: Callable) -> None:
     '''
     The function displays the history calls of a particular
@@ -80,8 +81,6 @@ def replay(method: Callable) -> None:
         print('{}(*{}) -> {}'.format(
             method.__qualname__,
             args.decode("utf-8"), result.decode("utf-8")))
-
-
 
 
 class Cache:
